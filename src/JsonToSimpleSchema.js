@@ -28,10 +28,7 @@ export default class JsonToSimpleSchema {
                 const simpleSchemaProperty = {
                     ...JsonToSimpleSchema.getSimpleSchemaTypeOption(jsonProperty),
                     ...getOptionalOption(propertyName, this.jsonSchema),
-                    ...getBlackboxOption(jsonProperty),
-                    ...getAllowedValuesOption(jsonProperty),
-                    ...getRegExOption(jsonProperty),
-                    ...translateOptions(jsonProperty),
+                    ...JsonToSimpleSchema.getCommonPropertyOptions(jsonProperty),
                 };
 
                 const propertyEntry = [propertyName, simpleSchemaProperty];
@@ -95,6 +92,15 @@ export default class JsonToSimpleSchema {
         return { type: typeOption };
     }
 
+    static getCommonPropertyOptions(property) {
+        return {
+            ...getBlackboxOption(property),
+            ...getAllowedValuesOption(property),
+            ...getRegExOption(property),
+            ...translateOptions(property),
+        };
+    }
+
     static getArrayEntry(propertyName, jsonProperty) {
         if (jsonProperty.oneOf) {
             const arrayValues = jsonProperty.oneOf.map(
@@ -115,10 +121,7 @@ export default class JsonToSimpleSchema {
                     `${currentPath}.$`,
                     {
                         type: Array,
-                        ...getBlackboxOption(currentProperty.items),
-                        ...getAllowedValuesOption(currentProperty.items),
-                        ...getRegExOption(currentProperty.items),
-                        ...translateOptions(currentProperty.items),
+                        ...this.getCommonPropertyOptions(currentProperty.items),
                     }
                 ]);
                 currentPath = `${currentPath}.$`;
@@ -130,10 +133,7 @@ export default class JsonToSimpleSchema {
                 `${currentPath}.$`,
                 {
                     ...JsonToSimpleSchema.getSimpleSchemaTypeOption(currentProperty.items),
-                    ...getBlackboxOption(currentProperty.items),
-                    ...getAllowedValuesOption(currentProperty.items),
-                    ...getRegExOption(currentProperty.items),
-                    ...translateOptions(currentProperty.items),
+                    ...this.getCommonPropertyOptions(currentProperty.items),
                 }
             ]);
 
@@ -144,10 +144,7 @@ export default class JsonToSimpleSchema {
             `${propertyName}.$`,
             {
                 ...JsonToSimpleSchema.getSimpleSchemaTypeOption(jsonProperty.items),
-                ...getBlackboxOption(jsonProperty.items),
-                ...getAllowedValuesOption(jsonProperty.items),
-                ...getRegExOption(jsonProperty.items),
-                ...translateOptions(jsonProperty.items),
+                ...this.getCommonPropertyOptions(jsonProperty.items),
             },
         ];
     }
