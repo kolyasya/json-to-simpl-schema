@@ -35,12 +35,15 @@ export default class JsonToSimpleSchema {
                 };
 
                 const propertyEntry = [propertyName, simpleSchemaProperty];
-                const arrayEntry =
-                    simpleSchemaProperty.type === Array
-                        ? [JsonToSimpleSchema.getArrayEntry(propertyName, jsonProperty)]
-                        : [];
+                let arrayEntries = [];
+                
+                if (simpleSchemaProperty.type === Array) {
+                    const result = JsonToSimpleSchema.getArrayEntry(propertyName, jsonProperty);
+                    // If result is an array of arrays (nested arrays case), spread it directly
+                    arrayEntries = Array.isArray(result[0]) ? result : [result];
+                }
 
-                return accumulatedEntries.concat([propertyEntry, ...arrayEntry]);
+                return accumulatedEntries.concat([propertyEntry, ...arrayEntries]);
             },
             [],
         );
@@ -99,6 +102,42 @@ export default class JsonToSimpleSchema {
             );
 
             return [`${propertyName}.$`, SimpleSchema.oneOf(...arrayValues)];
+        }
+
+        // Handle nested arrays by recursively creating array entries
+        if (jsonProperty.items?.type === 'array') {
+            const nestedEntries = [];
+            let currentProperty = jsonProperty;
+            let currentPath = propertyName;
+            
+            while (currentProperty.items?.type === 'array') {
+                nestedEntries.push([
+                    `${currentPath}.$`,
+                    {
+                        type: Array,
+                        ...getBlackboxOption(currentProperty.items),
+                        ...getAllowedValuesOption(currentProperty.items),
+                        ...getRegExOption(currentProperty.items),
+                        ...translateOptions(currentProperty.items),
+                    }
+                ]);
+                currentPath = `${currentPath}.$`;
+                currentProperty = currentProperty.items;
+            }
+
+            // Add the final entry for the innermost array items
+            nestedEntries.push([
+                `${currentPath}.$`,
+                {
+                    ...JsonToSimpleSchema.getSimpleSchemaTypeOption(currentProperty.items),
+                    ...getBlackboxOption(currentProperty.items),
+                    ...getAllowedValuesOption(currentProperty.items),
+                    ...getRegExOption(currentProperty.items),
+                    ...translateOptions(currentProperty.items),
+                }
+            ]);
+
+            return nestedEntries;
         }
 
         return [
