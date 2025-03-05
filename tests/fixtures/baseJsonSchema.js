@@ -35,6 +35,18 @@ export default {
                 },
             },
         },
+        arrayOfArraysOfObjects: {
+            type: "array",
+            items: {
+                type: "array",
+                items: {
+                    type: "object",
+                    properties: {
+                        bar: { type: "string" }
+                    }
+                }
+            }
+        },
         objectWithAdditionalProps: {
             type: "object",
             properties: {
