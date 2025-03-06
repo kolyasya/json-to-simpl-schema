@@ -19,7 +19,7 @@ export default class JsonToSimpleSchema {
         this.jsonSchema = jsonSchema;
     }
 
-    toSimpleSchema() {
+    toSimpleSchema({ definition = false } = {}) {
         const schemaId = this.jsonSchema?.$id;
         const properties = getJsonSchemaProperties(this.jsonSchema);
 
@@ -45,10 +45,16 @@ export default class JsonToSimpleSchema {
             [],
         );
 
-        const schema = new SimpleSchema(Object.fromEntries(simpleSchemaEntries));
+        const simpleSchemaDefinition = Object.fromEntries(simpleSchemaEntries);
+
+        const schema = new SimpleSchema(simpleSchemaDefinition);
 
         if (schemaId) {
             schemaCache.set(schemaId, schema);
+        }
+
+        if (definition) {
+            return simpleSchemaDefinition;
         }
 
         return schema;
