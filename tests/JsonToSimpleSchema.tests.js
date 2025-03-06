@@ -12,7 +12,6 @@ describe("JsonToSimpleSchema", () => {
         const simpleSchema = new JsonToSimpleSchema(baseJsonSchema).toSimpleSchema();
         const rawSchema = simpleSchema._schema;
 
-
         expect(rawSchema.id.type.definitions[0].type).to.equal(SimpleSchema.Integer);
         expect(rawSchema.id.optional).to.equal(false);
 
@@ -53,7 +52,10 @@ describe("JsonToSimpleSchema", () => {
         expect(rawSchema.arrayOfArraysOfObjects.type.definitions[0].type).to.equal(Array);
         expect(rawSchema.arrayOfArraysOfObjects.optional).to.equal(true);
         expect(rawSchema["arrayOfArraysOfObjects.$"].type.definitions[0].type).to.equal(Array);
-        expect(rawSchema["arrayOfArraysOfObjects.$.$"].type.definitions[0].type._schema.bar.type.definitions[0].type).to.equal(String);
+        expect(
+            rawSchema["arrayOfArraysOfObjects.$.$"].type.definitions[0].type._schema.bar.type
+                .definitions[0].type,
+        ).to.equal(String);
 
         expect(rawSchema.objectWithAdditionalProps.type.definitions[0].type).to.equal(Object);
         expect(rawSchema.objectWithAdditionalProps.type.definitions[0].blackbox).to.equal(true);

@@ -42,10 +42,10 @@ export default {
                 items: {
                     type: "object",
                     properties: {
-                        bar: { type: "string" }
-                    }
-                }
-            }
+                        bar: { type: "string" },
+                    },
+                },
+            },
         },
         objectWithAdditionalProps: {
             type: "object",

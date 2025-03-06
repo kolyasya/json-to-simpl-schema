@@ -33,7 +33,7 @@ export default class JsonToSimpleSchema {
 
                 const propertyEntry = [propertyName, simpleSchemaProperty];
                 let arrayEntries = [];
-                
+
                 if (simpleSchemaProperty.type === Array) {
                     const result = JsonToSimpleSchema.getArrayEntry(propertyName, jsonProperty);
                     // If result is an array of arrays (nested arrays case), spread it directly
@@ -111,18 +111,18 @@ export default class JsonToSimpleSchema {
         }
 
         // Handle nested arrays by recursively creating array entries
-        if (jsonProperty.items?.type === 'array') {
+        if (jsonProperty.items?.type === "array") {
             const nestedEntries = [];
             let currentProperty = jsonProperty;
             let currentPath = propertyName;
-            
-            while (currentProperty.items?.type === 'array') {
+
+            while (currentProperty.items?.type === "array") {
                 nestedEntries.push([
                     `${currentPath}.$`,
                     {
                         type: Array,
                         ...this.getCommonPropertyOptions(currentProperty.items),
-                    }
+                    },
                 ]);
                 currentPath = `${currentPath}.$`;
                 currentProperty = currentProperty.items;
@@ -134,7 +134,7 @@ export default class JsonToSimpleSchema {
                 {
                     ...JsonToSimpleSchema.getSimpleSchemaTypeOption(currentProperty.items),
                     ...this.getCommonPropertyOptions(currentProperty.items),
-                }
+                },
             ]);
 
             return nestedEntries;
